@@ -1,4 +1,4 @@
-package com.lin.ideaplugin.contants;
+package com.lin.ideaplugin.common.contants;
 
 public enum ActionType {
     MAPPER(1, "mapper code"),

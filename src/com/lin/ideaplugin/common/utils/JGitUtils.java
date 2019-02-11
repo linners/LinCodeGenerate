@@ -1,7 +1,6 @@
-package com.lin.ideaplugin.utils;
+package com.lin.ideaplugin.common.utils;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.File;

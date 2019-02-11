@@ -1,4 +1,4 @@
-package com.lin.ideaplugin.utils;
+package com.lin.ideaplugin.common.utils;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;

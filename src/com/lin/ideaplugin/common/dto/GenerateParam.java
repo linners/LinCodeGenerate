@@ -1,9 +1,6 @@
-package com.lin.ideaplugin.dto;
+package com.lin.ideaplugin.common.dto;
 
-import com.lin.ideaplugin.utils.VelocityUtils;
-import org.apache.velocity.VelocityContext;
-
-public class GenerateProjectExtend {
+public class GenerateParam {
 
     // git地址
     private String gitRepository;
@@ -17,47 +14,6 @@ public class GenerateProjectExtend {
     // 新工程相关
     private String projectName;
     private String basePackage;
-
-    // git模板工程全路径
-    private String gitProjectPath;
-    // velocityUtils实例
-    private VelocityUtils instance;
-    // velocityContext参数
-    private VelocityContext context;
-    // 新生成的工程存放目录
-    private String generatedProjectPath;
-
-    public String getGitProjectPath() {
-        return gitProjectPath;
-    }
-
-    public void setGitProjectPath(String gitProjectPath) {
-        this.gitProjectPath = gitProjectPath;
-    }
-
-    public VelocityUtils getInstance() {
-        return instance;
-    }
-
-    public void setInstance(VelocityUtils instance) {
-        this.instance = instance;
-    }
-
-    public VelocityContext getContext() {
-        return context;
-    }
-
-    public void setContext(VelocityContext context) {
-        this.context = context;
-    }
-
-    public String getGeneratedProjectPath() {
-        return generatedProjectPath;
-    }
-
-    public void setGeneratedProjectPath(String generatedProjectPath) {
-        this.generatedProjectPath = generatedProjectPath;
-    }
 
     public String getGitRepository() {
         return gitRepository;

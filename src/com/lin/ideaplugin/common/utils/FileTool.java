@@ -1,4 +1,4 @@
-package com.lin.ideaplugin.utils;
+package com.lin.ideaplugin.common.utils;
 
 import java.io.*;
 import java.net.HttpURLConnection;

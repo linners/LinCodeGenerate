@@ -1,9 +1,9 @@
 package com.lin.ideaplugin.service;
 
 import com.google.common.io.Files;
-import com.lin.ideaplugin.dto.GenerateProjectExtend;
-import com.lin.ideaplugin.utils.JGitUtils;
-import com.lin.ideaplugin.utils.VelocityUtils;
+import com.lin.ideaplugin.common.dto.GenerateProjectExtend;
+import com.lin.ideaplugin.common.utils.JGitUtils;
+import com.lin.ideaplugin.common.utils.VelocityUtils;
 import org.apache.velocity.VelocityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
