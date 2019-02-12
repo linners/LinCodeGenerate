@@ -5,6 +5,8 @@ import com.lin.ideaplugin.common.contants.VelocityFileType;
 import com.lin.ideaplugin.common.dto.GenerateCurdParam;
 import com.lin.ideaplugin.common.dto.GenerateProjectExtend;
 import com.lin.ideaplugin.common.utils.JGitUtils;
+import com.lin.ideaplugin.common.utils.JdbcUtil;
+import com.lin.ideaplugin.common.utils.StringUtil;
 import com.lin.ideaplugin.common.utils.VelocityUtils;
 import com.lin.ideaplugin.extension.CodeGenerateSetting;
 import com.lin.ideaplugin.extension.SettingConfigure;
@@ -36,8 +38,8 @@ public class CurdGenerateService {
         SettingConfigure settingConfigure = settings.getSettingConfigure();
         Map<String, String> templateMap = settingConfigure.getCodeTemplateMap();
 
-        String entityNameUp = "User";
-        String entityName = "user";
+        String entityNameUp = StringUtil.upperFirst(curdParam.getEntityName());
+        String entityName = StringUtil.lowerFirst(entityNameUp);
 
         // velocity context
         VelocityContext velocityContext = new VelocityContext();
@@ -50,7 +52,8 @@ public class CurdGenerateService {
         velocityContext.put("controllerPackage", settingConfigure.getControllerPackage());
         velocityContext.put("entityNameUp", entityNameUp);
         velocityContext.put("entityName", entityName);
-        velocityContext.put("tableName", "");
+        velocityContext.put("tableName", curdParam.getTableName());
+        velocityContext.put("columns", curdParam.getColumns());
 
         // template val
         boolean mapperCheckBoxSelected = curdParam.isMapperCheckBox();

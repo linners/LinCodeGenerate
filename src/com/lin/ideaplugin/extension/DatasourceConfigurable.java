@@ -6,6 +6,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import com.lin.ideaplugin.ui.DatasourceSettingPanel;
 import com.lin.ideaplugin.ui.SettingConfigurePanel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -13,22 +14,20 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class CodeGenerateConfigurable implements SearchableConfigurable {
+public class DatasourceConfigurable implements SearchableConfigurable {
 
-    private CodeGenerateSetting settings;
-    private SettingConfigurePanel configurePanel;
-    private Project project;
+    private DatasourceSetting datasourceSetting;
+    private DatasourceSettingPanel configurePanel;
 
-    public CodeGenerateConfigurable() {
+    public DatasourceConfigurable() {
         final Project project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext());
-        this.project = project;
-        this.settings = ServiceManager.getService(project, CodeGenerateSetting.class);
+        this.datasourceSetting = ServiceManager.getService(DatasourceSetting.class);
     }
 
     @NotNull
     @Override
     public String getId() {
-        return "plugins.LinCodeGenerate";
+        return "plugins.LinDatasource";
     }
 
     @Nullable
@@ -40,14 +39,14 @@ public class CodeGenerateConfigurable implements SearchableConfigurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "LinCodeGenerate";
+        return "LinDatasource";
     }
 
     @Nullable
     @Override
     public JComponent createComponent() {
         if(configurePanel==null) {
-            configurePanel = new SettingConfigurePanel(settings, project);
+            configurePanel = new DatasourceSettingPanel();
         }
         return configurePanel.getMainPanel();
     }
@@ -59,8 +58,8 @@ public class CodeGenerateConfigurable implements SearchableConfigurable {
 
     @Override
     public void apply() throws ConfigurationException {
-        SettingConfigure settingConfigure = configurePanel.getSettingConfigure();
-        settings.setSettingConfigure(settingConfigure);
+        MyDatasourceInfo myDatasourceInfo = configurePanel.getSettingConfigure();
+        datasourceSetting.setMyDatasourceInfo(myDatasourceInfo);
     }
 
     @Override

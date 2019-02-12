@@ -95,9 +95,12 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <applicationConfigurable instance="com.lin.ideaplugin.extension.CodeGenerateConfigurable"/>
-        <applicationService serviceInterface="com.lin.ideaplugin.extension.CodeGenerateSetting"
-                            serviceImplementation="com.lin.ideaplugin.extension.CodeGenerateSetting"/>
+        <applicationService serviceInterface="com.lin.ideaplugin.extension.DatasourceSetting"
+                            serviceImplementation="com.lin.ideaplugin.extension.DatasourceSetting" />
 
+        <applicationConfigurable instance="com.lin.ideaplugin.extension.DatasourceConfigurable"/>
+        <projectService serviceInterface="com.lin.ideaplugin.extension.CodeGenerateSetting"
+                            serviceImplementation="com.lin.ideaplugin.extension.CodeGenerateSetting"/>
     </extensions>
 
 </idea-plugin>

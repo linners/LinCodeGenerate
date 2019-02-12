@@ -5,6 +5,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileChooser.FileChooserDialog;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -15,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +45,7 @@ public class SettingConfigurePanel {
     private Map<String, SettingCodeTemplate> editPanelMap;
 
     public SettingConfigurePanel(CodeGenerateSetting setting, Project project) {
+        // 初始化按钮
         initBtn(project);
         editPanelMap = new HashMap<>();
         SettingConfigure settingConfigure = setting.getSettingConfigure();
@@ -71,53 +74,52 @@ public class SettingConfigurePanel {
     }
 
     private void initBtn(Project project) {
-        mapperBtn.setPreferredSize(new Dimension(30, 30));
         mapperBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String mapperPathStr = chooseDirectory(project);
+                String mapperPathStr = chooseDirectory(project, mapperPath.getText());
                 mapperPath.setText(mapperPathStr);
             }
         });
         entityBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String entityPathStr = chooseDirectory(project);
+                String entityPathStr = chooseDirectory(project, entityPath.getText());
                 entityPath.setText(entityPathStr);
             }
         });
         xmlBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String xmlPathStr = chooseDirectory(project);
+                String xmlPathStr = chooseDirectory(project, xmlPath.getText());
                 xmlPath.setText(xmlPathStr);
             }
         });
         paramBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String paramPathStr = chooseDirectory(project);
+                String paramPathStr = chooseDirectory(project, paramPath.getText());
                 paramPath.setText(paramPathStr);
             }
         });
         serviceBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String servicePathStr = chooseDirectory(project);
+                String servicePathStr = chooseDirectory(project, servicePath.getText());
                 servicePath.setText(servicePathStr);
             }
         });
         controllerBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String controllerPathStr = chooseDirectory(project);
+                String controllerPathStr = chooseDirectory(project, controllerPath.getText());
                 controllerPath.setText(controllerPathStr);
             }
         });
         vueBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String vuePathStr = chooseDirectory(project);
+                String vuePathStr = chooseDirectory(project, vuePaagePath.getText());
                 vuePaagePath.setText(vuePathStr);
             }
         });
@@ -128,25 +130,21 @@ public class SettingConfigurePanel {
      * @param project
      * @return
      */
-    private String chooseDirectory(Project project) {
-        FileChooserDescriptor descriptor =
-                FileChooserDescriptorFactory.createSingleFolderDescriptor()
-                        .withTitle("Export Directory Location")
-                        .withDescription("Choose directory to export run configurations to")
-                        .withHideIgnored(false);
-        FileChooserDialog chooser =
-                FileChooserFactory.getInstance().createFileChooser(descriptor, project, null);
-
+    private String chooseDirectory(Project project, String path) {
+        FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                        .withTitle("Select Directory Location")
+                        .withDescription("Choose directory for lin generate code configurations")
+                        .withHideIgnored(true);
+        FileChooserDialog chooser = FileChooserFactory.getInstance().createFileChooser(descriptor, project, null);
         final VirtualFile[] files;
-//        File existingLocation = new File(getOutputDirectoryPath());
-//        if (existingLocation.exists()) {
-//            VirtualFile toSelect =
-//                    LocalFileSystem.getInstance().refreshAndFindFileByPath(existingLocation.getPath());
-//            files = chooser.choose(null, toSelect);
-//        } else {
-        files = chooser.choose(null);
-//        }
-        if (files.length == 0) {
+        File existingLocation = new File(path);
+        if (existingLocation.exists()) {
+            VirtualFile toSelect = LocalFileSystem.getInstance().refreshAndFindFileByPath(existingLocation.getPath());
+            files = chooser.choose(project, toSelect);
+        } else {
+            files = chooser.choose(project);
+        }
+        if (files==null) {
             return "";
         }
         VirtualFile file = files[0];

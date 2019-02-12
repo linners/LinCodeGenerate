@@ -18,7 +18,7 @@ public class AutoGenerateCurdDialog extends DialogWrapper {
 
     public AutoGenerateCurdDialog(@Nullable Project project, ActionType actionType) {
         super(project);
-        settings =  ServiceManager.getService(CodeGenerateSetting.class);
+        settings =  ServiceManager.getService(project, CodeGenerateSetting.class);
         SettingConfigure settingConfigure = settings.getSettingConfigure();
         panel = new CurdGeneratePanel(settings, project, actionType);
         setTitle("project auto generate");

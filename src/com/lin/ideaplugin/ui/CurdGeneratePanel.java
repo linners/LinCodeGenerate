@@ -6,6 +6,9 @@ import com.intellij.openapi.project.Project;
 import com.lin.ideaplugin.common.contants.ActionType;
 import com.lin.ideaplugin.common.contants.VelocityFileType;
 import com.lin.ideaplugin.common.dto.GenerateCurdParam;
+import com.lin.ideaplugin.common.dto.TableColumnInfo;
+import com.lin.ideaplugin.common.utils.JdbcUtil;
+import com.lin.ideaplugin.common.utils.StringUtil;
 import com.lin.ideaplugin.common.utils.VelocityUtils;
 import com.lin.ideaplugin.extension.CodeGenerateSetting;
 import com.lin.ideaplugin.extension.SettingConfigure;
@@ -18,13 +21,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CurdGeneratePanel {
@@ -48,6 +55,10 @@ public class CurdGeneratePanel {
     private JCheckBox vueListCheckBox;
     private JCheckBox vueNewCheckBox;
     private JCheckBox vueDetailCheckBox;
+    private JTextField entityName;
+
+    private String tableName;
+    private List<TableColumnInfo> columns;
 
     private Project project;
     private String path;
@@ -68,6 +79,43 @@ public class CurdGeneratePanel {
 
     private void initData() {
         mainPanel.setPreferredSize(new Dimension(550, 320));
+        // 查询所有的数据库
+        List<String> allDatabases = getAllDatabases();
+        dataBases.removeAllItems();
+        for(String dbName : allDatabases){
+            dataBases.addItem(dbName);
+        }
+        // 监听下拉事件
+        dataBases.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED){
+                    Object item = e.getItem();
+                    tables.removeAllItems();
+                    // 查询所有的数据库表
+                    List<String> allTables = getAllTablesByDbName(item.toString());
+                    for(String tableName : allTables) {
+                        tables.addItem(tableName);
+                    }
+                }
+            }
+        });
+        // 监听下拉
+        tables.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED){
+                    Object item = e.getItem();
+                    tableName = item.toString();
+                    entityName.setText("");
+                    columns = null;
+                    // 查询所有的表字段
+                    columns = getAllColumnsByTable(tableName);
+                    // 初始化实体类名称
+                    entityName.setText(StringUtil.camelName(tableName));
+                }
+            }
+        });
     }
 
     // 自动生成curd代码
@@ -85,90 +133,63 @@ public class CurdGeneratePanel {
         curdParam.setVueNewCheckBox(vueNewCheckBox.isSelected());
         curdParam.setVueDetailCheckBox(vueDetailCheckBox.isSelected());
         curdParam.setSettings(settings);
+        curdParam.setTableName(tableName);
+        curdParam.setColumns(columns);
+        curdParam.setEntityName(entityName.getText());
         // 状态任务
         new BackgroundTaskQueue(project, "task name").run(new GenerateCodeBackgroundTask(project, "generate code ...", curdParam));
-
-//        // setting config
-//        SettingConfigure settingConfigure = settings.getSettingConfigure();
-//        Map<String, String> templateMap = settingConfigure.getCodeTemplateMap();
-//
-//        String entityNameUp = "User";
-//        String entityName = "user";
-//
-//        // velocity context
-//        VelocityContext velocityContext = new VelocityContext();
-//        velocityContext.put("basePackage", settingConfigure.getBasePackage());
-//        velocityContext.put("mapperPackage", settingConfigure.getMapperPackage());
-//        velocityContext.put("entityPackage", settingConfigure.getEntityPackage());
-//        velocityContext.put("paramPackage", settingConfigure.getParamPackage());
-//        velocityContext.put("servicePackage", settingConfigure.getServicePackage());
-//        velocityContext.put("apiPackage", "");
-//        velocityContext.put("controllerPackage", settingConfigure.getControllerPackage());
-//        velocityContext.put("entityNameUp", entityNameUp);
-//        velocityContext.put("entityName", entityName);
-//        velocityContext.put("tableName", "");
-//
-//        // template val
-//        boolean mapperCheckBoxSelected = mapperCheckBox.isSelected();
-//        boolean xmlCheckBoxSelected = xmlCheckBox.isSelected();
-//        boolean entityCheckBoxSelected = entityCheckBox.isSelected();
-//        boolean paramCheckBoxSelected = paramCheckBox.isSelected();
-//        boolean serviceCheckBoxSelected = serviceCheckBox.isSelected();
-//        boolean apiCheckBoxSelected = apiCheckBox.isSelected();
-//        boolean dtoCheckBoxSelected = dtoCheckBox.isSelected();
-//        boolean controllerCheckBoxSelected = controllerCheckBox.isSelected();
-//        boolean vueListCheckBoxSelected = vueListCheckBox.isSelected();
-//        boolean vueNewCheckBoxSelected = vueNewCheckBox.isSelected();
-//        boolean vueDetailCheckBoxSelected = vueDetailCheckBox.isSelected();
-//        if(mapperCheckBoxSelected){
-//            String mapperTemplate = templateMap.get(VelocityFileType.MAPPER.getType());
-//            generateTemplateFile(velocityContext, mapperTemplate, settingConfigure.getMapperPath()+"/"+entityNameUp+"Mapper.java");
-//        }
-//        if(xmlCheckBoxSelected){
-//            String xmlTemplate = templateMap.get(VelocityFileType.MAPPER_XML.getType());
-//            generateTemplateFile(velocityContext, xmlTemplate, settingConfigure.getXmlPath()+"/"+entityNameUp+"Mapper.xml");
-//            String xmlExtendTemplate = templateMap.get(VelocityFileType.MAPPER_XML_EXTEND.getType());
-//            generateTemplateFile(velocityContext, xmlExtendTemplate, settingConfigure.getXmlPath()+"/extend/"+entityNameUp+"Mapper.xml");
-//        }
-//        if(entityCheckBoxSelected){
-//            String entityTemplate = templateMap.get(VelocityFileType.ENTITY.getType());
-//            generateTemplateFile(velocityContext, entityTemplate, settingConfigure.getEntityPath()+"/"+entityNameUp+".java");
-//        }
-//        if(paramCheckBoxSelected){
-//            String paramTemplate = templateMap.get(VelocityFileType.PARAM.getType());
-//            generateTemplateFile(velocityContext, paramTemplate, settingConfigure.getParamPath()+"/"+entityNameUp+"Param.java");
-//        }
-//        if(serviceCheckBoxSelected){
-//            String serviceTemplate = templateMap.get(VelocityFileType.SERVICE.getType());
-//            generateTemplateFile(velocityContext, serviceTemplate, settingConfigure.getServicePath()+"/"+entityNameUp+"Service.java");
-//            String serviceImplTemplate = templateMap.get(VelocityFileType.SERVICE_IMPL.getType());
-//            generateTemplateFile(velocityContext, serviceImplTemplate, settingConfigure.getXmlPath()+"/impl/"+entityNameUp+"ServiceImpl.java");
-//        }
-//        if(apiCheckBoxSelected){
-//            String apiTemplate = templateMap.get(VelocityFileType.API.getType());
-//            generateTemplateFile(velocityContext, apiTemplate, settingConfigure.getServicePath()+"/"+entityNameUp+"Api.java");
-//        }
-//        if(dtoCheckBoxSelected){
-//            String dtoTemplate = templateMap.get(VelocityFileType.DTO.getType());
-//            generateTemplateFile(velocityContext, dtoTemplate, settingConfigure.getParamPath()+"/"+entityNameUp+"Dto.java");
-//        }
-//        if(controllerCheckBoxSelected){
-//            String controllerTemplate = templateMap.get(VelocityFileType.CONTROLLER.getType());
-//            generateTemplateFile(velocityContext, controllerTemplate, settingConfigure.getControllerPath()+"/"+entityNameUp+"Controller.java");
-//        }
-//        if(vueListCheckBoxSelected){
-//            String vueListTemplate = templateMap.get(VelocityFileType.VUE_LIST.getType());
-//            generateTemplateFile(velocityContext, vueListTemplate, settingConfigure.getVuePagePath()+"/"+entityName+"/"+entityNameUp+"List.vue");
-//        }
     }
 
-//    public void generateTemplateFile(VelocityContext velocityContext, String templateVal, String filePath) {
-//        String newTemplateVal = VelocityUtils.getInstance().compileVelocityString(templateVal, velocityContext);
-//        try {
-//            Files.write(newTemplateVal.getBytes(Charset.forName("utf-8")), new File(filePath));
-//            System.out.println("生成完毕！");
-//        } catch (IOException e1) {
-//            e1.printStackTrace();
-//        }
-//    }
+    public List<String> getAllDatabases() {
+        List<String> dbList = new ArrayList<>();
+        JdbcUtil jdbcUtil = new JdbcUtil("com.mysql.jdbc.Driver", "jdbc:mysql://39.105.136.143:3306/bulter?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false&useSSL=false",
+                "bulter", "Lin*^37aa");
+        List<Object> result = jdbcUtil.excuteQuery("select schema_name as db_name from information_schema.schemata", null);
+        if(result!=null && result.size()>0) {
+            for(Object object : result) {
+                Map<String, String> map = (Map<String, String>) object;
+                dbList.add(map.get("db_name"));
+            }
+        }
+        return dbList;
+    }
+
+    public List<String> getAllTablesByDbName(String dbName) {
+        List<String> tableList = new ArrayList<>();
+        JdbcUtil jdbcUtil = new JdbcUtil("com.mysql.jdbc.Driver", "jdbc:mysql://39.105.136.143:3306/bulter?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false&useSSL=false",
+                "bulter", "Lin*^37aa");
+        List<Object> result = jdbcUtil.excuteQuery("select table_schema as own_db_name, table_name,table_comment from information_schema.tables where table_schema = ?", new Object[]{dbName});
+        if(result!=null && result.size()>0) {
+            for(Object object : result) {
+                Map<String, String> map = (Map<String, String>) object;
+                tableList.add(map.get("table_name"));
+            }
+        }
+        return tableList;
+    }
+
+    public List<TableColumnInfo> getAllColumnsByTable(String tableName) {
+        List<TableColumnInfo> columnList = new ArrayList<>();
+        JdbcUtil jdbcUtil = new JdbcUtil("com.mysql.jdbc.Driver", "jdbc:mysql://39.105.136.143:3306/bulter?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false&useSSL=false",
+                "bulter", "Lin*^37aa");
+        List<Object> result = jdbcUtil.excuteQuery("select distinct column_name, table_name as own_table_name, data_type, column_comment from information_schema.columns where table_name = ?", new Object[]{tableName});
+        if(result!=null && result.size()>0) {
+            for(Object object : result) {
+                Map<String, String> map = (Map<String, String>) object;
+                String columnName = map.get("column_name");
+                String ownTableName = map.get("own_table_name");
+                String dataType = map.get("data_type");
+                String columnComment = map.get("column_comment");
+                TableColumnInfo tableColumnInfo = new TableColumnInfo();
+                tableColumnInfo.setOwnTableName(ownTableName);
+                tableColumnInfo.setColumnName(columnName);
+                tableColumnInfo.setDataType(dataType);
+                tableColumnInfo.setColumnComment(columnComment);
+                tableColumnInfo.setFieldName(StringUtil.camelName(columnName));
+                tableColumnInfo.setFieldType(StringUtil.sqlType2JavaType(dataType));
+                columnList.add(tableColumnInfo);
+            }
+        }
+        return columnList;
+    }
 }

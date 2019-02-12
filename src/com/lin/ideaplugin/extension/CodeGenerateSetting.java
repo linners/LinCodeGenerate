@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-@State(name = "LinCodeGenerateSetting", storages = {@Storage(file = "$APP_CONFIG$/lin-code-generate-setting.xml")})
+@State(name = "LinCodeGenerateSetting", storages = {@Storage(value = "lin-code-generate-setting.xml")})
 public class CodeGenerateSetting implements PersistentStateComponent<CodeGenerateSetting> {
 
     private static final Logger LOGGER = Logger.getInstance(CodeGenerateSetting.class);

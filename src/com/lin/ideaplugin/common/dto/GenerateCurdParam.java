@@ -2,6 +2,8 @@ package com.lin.ideaplugin.common.dto;
 
 import com.lin.ideaplugin.extension.CodeGenerateSetting;
 
+import java.util.List;
+
 public class GenerateCurdParam {
     private boolean mapperCheckBox;
     private boolean xmlCheckBox;
@@ -14,6 +16,10 @@ public class GenerateCurdParam {
     private boolean vueListCheckBox;
     private boolean vueNewCheckBox;
     private boolean vueDetailCheckBox;
+
+    private String tableName;
+    private List<TableColumnInfo> columns;
+    private String entityName;
 
     private CodeGenerateSetting settings;
 
@@ -111,5 +117,29 @@ public class GenerateCurdParam {
 
     public void setSettings(CodeGenerateSetting settings) {
         this.settings = settings;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public List<TableColumnInfo> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<TableColumnInfo> columns) {
+        this.columns = columns;
+    }
+
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
     }
 }
