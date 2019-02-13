@@ -28,12 +28,14 @@ public class DatasourceSettingPanel {
         Map<String, MyDatasourceInfo> myDatasourceInfoMap = datasourceSetting.getMyDatasourceInfoMap();
         // 初始化tab组件
         tabbedPanel = new JBTabbedPane();
-        myDatasourceInfoMap.forEach((dsName, dsInfo) -> {
-            count++;
-            DatasourceTemplate template = new DatasourceTemplate(dsInfo);
-            tabbedPanel.addTab("数据源_"+ count, template.getMainPanel());
-            datasourceTemplateList.add(template);
-        });
+        if(myDatasourceInfoMap!=null && myDatasourceInfoMap.size()>0){
+            myDatasourceInfoMap.forEach((dsName, dsInfo) -> {
+                count++;
+                DatasourceTemplate template = new DatasourceTemplate(dsInfo);
+                tabbedPanel.addTab("数据源_"+ count, template.getMainPanel());
+                datasourceTemplateList.add(template);
+            });
+        }
         GridConstraints constraints = new GridConstraints();
         constraints.setRow(0);
         constraints.setFill(GridConstraints.FILL_BOTH);

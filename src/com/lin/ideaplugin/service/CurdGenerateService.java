@@ -2,8 +2,10 @@ package com.lin.ideaplugin.service;
 
 import com.google.common.io.Files;
 import com.lin.ideaplugin.common.contants.VelocityFileType;
+import com.lin.ideaplugin.common.dto.CurdTableInfo;
 import com.lin.ideaplugin.common.dto.GenerateCurdParam;
 import com.lin.ideaplugin.common.dto.GenerateProjectExtend;
+import com.lin.ideaplugin.common.dto.TableColumnInfo;
 import com.lin.ideaplugin.common.utils.JGitUtils;
 import com.lin.ideaplugin.common.utils.JdbcUtil;
 import com.lin.ideaplugin.common.utils.StringUtil;
@@ -33,12 +35,21 @@ public class CurdGenerateService {
      */
     public List<String> generatorCurdCode(GenerateCurdParam curdParam) {
         List<String> resultList = new ArrayList<>();
+        List<CurdTableInfo> tableInfos = curdParam.getTableInfos();
+        if(tableInfos!=null && tableInfos.size()>0) {
+            for(CurdTableInfo curdTableInfo : tableInfos)
+                singleTableGenerate(resultList, curdParam, curdTableInfo.getTableName(), curdTableInfo.getEntityName(), curdTableInfo.getColumns());
+        }
+        return resultList;
+    }
+
+    public void singleTableGenerate(List<String> resultList, GenerateCurdParam curdParam, String tableName, String myEntityName, List<TableColumnInfo> columnInfos){
         // setting config
         CodeGenerateSetting settings = curdParam.getSettings();
         SettingConfigure settingConfigure = settings.getSettingConfigure();
         Map<String, String> templateMap = settingConfigure.getCodeTemplateMap();
 
-        String entityNameUp = StringUtil.upperFirst(curdParam.getEntityName());
+        String entityNameUp = StringUtil.upperFirst(myEntityName);
         String entityName = StringUtil.lowerFirst(entityNameUp);
 
         // velocity context
@@ -52,8 +63,8 @@ public class CurdGenerateService {
         velocityContext.put("controllerPackage", settingConfigure.getControllerPackage());
         velocityContext.put("entityNameUp", entityNameUp);
         velocityContext.put("entityName", entityName);
-        velocityContext.put("tableName", curdParam.getTableName());
-        velocityContext.put("columns", curdParam.getColumns());
+        velocityContext.put("tableName", tableName);
+        velocityContext.put("columns", columnInfos);
 
         // template val
         boolean mapperCheckBoxSelected = curdParam.isMapperCheckBox();
@@ -140,7 +151,6 @@ public class CurdGenerateService {
                 resultList.add(entityName + "/" + entityNameUp + "List.vue");
             }
         }
-        return resultList;
     }
 
     /**
