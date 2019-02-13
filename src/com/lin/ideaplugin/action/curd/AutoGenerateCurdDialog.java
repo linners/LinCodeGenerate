@@ -4,6 +4,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.lin.ideaplugin.extension.CodeGenerateSetting;
+import com.lin.ideaplugin.extension.DatasourceSetting;
 import com.lin.ideaplugin.extension.SettingConfigure;
 import com.lin.ideaplugin.ui.CurdGeneratePanel;
 import com.lin.ideaplugin.common.contants.ActionType;
@@ -15,13 +16,14 @@ public class AutoGenerateCurdDialog extends DialogWrapper {
 
     private final CurdGeneratePanel panel;
     private CodeGenerateSetting settings;
+    private DatasourceSetting datasourceSetting;
 
     public AutoGenerateCurdDialog(@Nullable Project project, ActionType actionType) {
         super(project);
         settings =  ServiceManager.getService(project, CodeGenerateSetting.class);
-        SettingConfigure settingConfigure = settings.getSettingConfigure();
-        panel = new CurdGeneratePanel(settings, project, actionType);
-        setTitle("project auto generate");
+        datasourceSetting =  ServiceManager.getService(DatasourceSetting.class);
+        panel = new CurdGeneratePanel(settings, datasourceSetting, project, actionType);
+        setTitle("curd auto generate");
         init();
     }
 

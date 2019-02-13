@@ -11,6 +11,8 @@ import com.lin.ideaplugin.common.utils.JdbcUtil;
 import com.lin.ideaplugin.common.utils.StringUtil;
 import com.lin.ideaplugin.common.utils.VelocityUtils;
 import com.lin.ideaplugin.extension.CodeGenerateSetting;
+import com.lin.ideaplugin.extension.DatasourceSetting;
+import com.lin.ideaplugin.extension.MyDatasourceInfo;
 import com.lin.ideaplugin.extension.SettingConfigure;
 import com.lin.ideaplugin.task.GenerateCodeBackgroundTask;
 import org.apache.commons.io.IOUtils;
@@ -65,9 +67,13 @@ public class CurdGeneratePanel {
     private ActionType actionType;
 
     private CodeGenerateSetting settings;
+    private DatasourceSetting datasourceSetting;
 
-    public CurdGeneratePanel(CodeGenerateSetting mysettings, Project myproject, ActionType myActionType) {
+    private MyDatasourceInfo curDatasourceInfo;
+
+    public CurdGeneratePanel(CodeGenerateSetting mysettings, DatasourceSetting myDatasourceSetting, Project myproject, ActionType myActionType) {
         settings = mysettings;
+        datasourceSetting = myDatasourceSetting;
         project = myproject;
         actionType = myActionType;
         initData();
@@ -79,13 +85,43 @@ public class CurdGeneratePanel {
 
     private void initData() {
         mainPanel.setPreferredSize(new Dimension(550, 320));
-        // 查询所有的数据库
-        List<String> allDatabases = getAllDatabases();
-        dataBases.removeAllItems();
-        for(String dbName : allDatabases){
-            dataBases.addItem(dbName);
+        // 查询所有的数据源
+        List<String> allDatasources = getAllDatasources();
+        dataSources.removeAllItems();
+        for(String datasourceKey : allDatasources){
+            dataSources.addItem(datasourceKey);
         }
-        // 监听下拉事件
+        // 当前数据源
+        curDatasourceInfo = datasourceSetting.getMyDatasourceInfoMap().get(allDatasources.get(0));
+        // 查询所有数据库
+        List<String> alldbNames = getAllDatabasesByDsKey();
+        for(String tableName : alldbNames) {
+            dataBases.addItem(tableName);
+        }
+        // 查询所有数据库表
+        List<String> allTableNames = getAllTablesByDbName(alldbNames.get(0));
+        for(String tableName : allTableNames) {
+            tables.addItem(tableName);
+        }
+        // 数据源变化下拉事件
+        dataSources.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED){
+                    Object item = e.getItem();
+                    // 当前数据源
+                    String datasourceKey = item.toString();
+                    curDatasourceInfo = datasourceSetting.getMyDatasourceInfoMap().get(datasourceKey);
+                    dataBases.removeAllItems();
+                    // 查询所有的数据库
+                    List<String> alldbNames = getAllDatabasesByDsKey();
+                    for(String tableName : alldbNames) {
+                        dataBases.addItem(tableName);
+                    }
+                }
+            }
+        });
+        // 数据库变化下拉事件
         dataBases.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -100,7 +136,7 @@ public class CurdGeneratePanel {
                 }
             }
         });
-        // 监听下拉
+        // 数据库表变化监听下拉
         tables.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -140,10 +176,29 @@ public class CurdGeneratePanel {
         new BackgroundTaskQueue(project, "task name").run(new GenerateCodeBackgroundTask(project, "generate code ...", curdParam));
     }
 
-    public List<String> getAllDatabases() {
+    /**
+     * 获得所有的数据源
+     * @return
+     */
+    public List<String> getAllDatasources() {
+        List<String> datasourceList = new ArrayList<>();
+        Map<String, MyDatasourceInfo> myDatasourceInfoMap = datasourceSetting.getMyDatasourceInfoMap();
+        if(myDatasourceInfoMap!=null && myDatasourceInfoMap.size()>0){
+            myDatasourceInfoMap.forEach((key, datasourceInfo)->{
+                datasourceList.add(datasourceInfo.getHost()+"_"+datasourceInfo.getPort());
+            });
+        }
+        return datasourceList;
+    }
+
+    /**
+     * 通过数据源，获得所有的数据库
+     * @param datasourceKey  形式： host_port
+     * @return
+     */
+    public List<String> getAllDatabasesByDsKey() {
         List<String> dbList = new ArrayList<>();
-        JdbcUtil jdbcUtil = new JdbcUtil("com.mysql.jdbc.Driver", "jdbc:mysql://39.105.136.143:3306/bulter?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false&useSSL=false",
-                "bulter", "Lin*^37aa");
+        JdbcUtil jdbcUtil = JdbcUtil.getInstance(curDatasourceInfo.getHost(), curDatasourceInfo.getPort(), curDatasourceInfo.getUserName(), curDatasourceInfo.getPassword());
         List<Object> result = jdbcUtil.excuteQuery("select schema_name as db_name from information_schema.schemata", null);
         if(result!=null && result.size()>0) {
             for(Object object : result) {
@@ -156,8 +211,7 @@ public class CurdGeneratePanel {
 
     public List<String> getAllTablesByDbName(String dbName) {
         List<String> tableList = new ArrayList<>();
-        JdbcUtil jdbcUtil = new JdbcUtil("com.mysql.jdbc.Driver", "jdbc:mysql://39.105.136.143:3306/bulter?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false&useSSL=false",
-                "bulter", "Lin*^37aa");
+        JdbcUtil jdbcUtil = JdbcUtil.getInstance(curDatasourceInfo.getHost(), curDatasourceInfo.getPort(), curDatasourceInfo.getUserName(), curDatasourceInfo.getPassword());
         List<Object> result = jdbcUtil.excuteQuery("select table_schema as own_db_name, table_name,table_comment from information_schema.tables where table_schema = ?", new Object[]{dbName});
         if(result!=null && result.size()>0) {
             for(Object object : result) {
@@ -170,8 +224,7 @@ public class CurdGeneratePanel {
 
     public List<TableColumnInfo> getAllColumnsByTable(String tableName) {
         List<TableColumnInfo> columnList = new ArrayList<>();
-        JdbcUtil jdbcUtil = new JdbcUtil("com.mysql.jdbc.Driver", "jdbc:mysql://39.105.136.143:3306/bulter?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false&useSSL=false",
-                "bulter", "Lin*^37aa");
+        JdbcUtil jdbcUtil = JdbcUtil.getInstance(curDatasourceInfo.getHost(), curDatasourceInfo.getPort(), curDatasourceInfo.getUserName(), curDatasourceInfo.getPassword());
         List<Object> result = jdbcUtil.excuteQuery("select distinct column_name, table_name as own_table_name, data_type, column_comment from information_schema.columns where table_name = ?", new Object[]{tableName});
         if(result!=null && result.size()>0) {
             for(Object object : result) {

@@ -1,18 +1,15 @@
 package com.lin.ideaplugin.extension;
 
-import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
-import com.intellij.openapi.project.Project;
 import com.lin.ideaplugin.ui.DatasourceSettingPanel;
-import com.lin.ideaplugin.ui.SettingConfigurePanel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Map;
 
 public class DatasourceConfigurable implements SearchableConfigurable {
 
@@ -20,7 +17,6 @@ public class DatasourceConfigurable implements SearchableConfigurable {
     private DatasourceSettingPanel configurePanel;
 
     public DatasourceConfigurable() {
-        final Project project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext());
         this.datasourceSetting = ServiceManager.getService(DatasourceSetting.class);
     }
 
@@ -46,7 +42,7 @@ public class DatasourceConfigurable implements SearchableConfigurable {
     @Override
     public JComponent createComponent() {
         if(configurePanel==null) {
-            configurePanel = new DatasourceSettingPanel();
+            configurePanel = new DatasourceSettingPanel(datasourceSetting);
         }
         return configurePanel.getMainPanel();
     }
@@ -58,8 +54,8 @@ public class DatasourceConfigurable implements SearchableConfigurable {
 
     @Override
     public void apply() throws ConfigurationException {
-        MyDatasourceInfo myDatasourceInfo = configurePanel.getSettingConfigure();
-        datasourceSetting.setMyDatasourceInfo(myDatasourceInfo);
+        Map<String, MyDatasourceInfo> myDatasourceInfoList = configurePanel.getSettingConfigure();
+        datasourceSetting.setMyDatasourceInfoMap(myDatasourceInfoList);
     }
 
     @Override

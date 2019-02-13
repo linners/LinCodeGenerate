@@ -45,6 +45,17 @@ public class JdbcUtil {
         this.password = password;
     }
 
+    public static JdbcUtil getInstance(String hostIp, String port, String username,String password){
+        String url = "jdbc:mysql://" + hostIp + ":"+port+"?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false&useSSL=false";
+        return new JdbcUtil("com.mysql.jdbc.Driver", url, username, password);
+    }
+
+    public static void main(String[] args) {
+        JdbcUtil instance = JdbcUtil.getInstance("192.168.2.27", "3307", "product_rw", "GOhSyRsrz09ZH4QU");
+        List<Object> objects = instance.excuteQuery("select 'x'", null);
+        System.out.println(objects);
+    }
+
     /**
      * 建立数据库连接
      * @return 数据库连接

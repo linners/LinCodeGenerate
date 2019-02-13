@@ -7,25 +7,24 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
 
-@State(name = "LinDatasourceSetting", storages = {@Storage(value = "lin-datasource-setting.xml")})
+import java.util.HashMap;
+import java.util.Map;
+
+@State(name = "LinDatasourceSetting", storages = {@Storage(value = "$APP_CONFIG$/lin-datasource-setting.xml")})
 public class DatasourceSetting implements PersistentStateComponent<DatasourceSetting> {
 
     private static final Logger LOGGER = Logger.getInstance(DatasourceSetting.class);
 
-    private MyDatasourceInfo myDatasourceInfo;
-
-    public DatasourceSetting() {
-        loadDefaultSettings();
-    }
+    private Map<String, MyDatasourceInfo> myDatasourceInfoMap;
 
     public void loadDefaultSettings() {
-        myDatasourceInfo = new MyDatasourceInfo();
+        myDatasourceInfoMap = new HashMap<>();
     }
 
     @Nullable
     @Override
     public DatasourceSetting getState() {
-        if (myDatasourceInfo == null) {
+        if (myDatasourceInfoMap == null) {
             loadDefaultSettings();
         }
         return this;
@@ -36,11 +35,11 @@ public class DatasourceSetting implements PersistentStateComponent<DatasourceSet
         XmlSerializerUtil.copyBean(datasourceSetting, this);
     }
 
-    public MyDatasourceInfo getMyDatasourceInfo() {
-        return myDatasourceInfo;
+    public Map<String, MyDatasourceInfo> getMyDatasourceInfoMap() {
+        return myDatasourceInfoMap;
     }
 
-    public void setMyDatasourceInfo(MyDatasourceInfo myDatasourceInfo) {
-        this.myDatasourceInfo = myDatasourceInfo;
+    public void setMyDatasourceInfoMap(Map<String, MyDatasourceInfo> myDatasourceInfoMap) {
+        this.myDatasourceInfoMap = myDatasourceInfoMap;
     }
 }

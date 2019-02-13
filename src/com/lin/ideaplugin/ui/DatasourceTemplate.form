@@ -10,7 +10,7 @@
     <children>
       <component id="7bee7" class="javax.swing.JLabel">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Host"/>
@@ -23,7 +23,7 @@
       </vspacer>
       <component id="e1e78" class="javax.swing.JTextField" binding="host">
         <constraints>
-          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
           </grid>
         </constraints>
@@ -31,29 +31,13 @@
       </component>
       <component id="798ab" class="javax.swing.JLabel">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Database"/>
         </properties>
       </component>
-      <component id="df27e" class="javax.swing.JTextField" binding="dataBase">
-        <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="bf0e4" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="UserName"/>
-        </properties>
-      </component>
-      <component id="3f7bd" class="javax.swing.JTextField" binding="userName">
+      <component id="df27e" class="javax.swing.JTextField" binding="port">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -61,15 +45,15 @@
         </constraints>
         <properties/>
       </component>
-      <component id="923cd" class="javax.swing.JLabel">
+      <component id="bf0e4" class="javax.swing.JLabel">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="PassWord"/>
+          <text value="UserName"/>
         </properties>
       </component>
-      <component id="7aeee" class="javax.swing.JPasswordField" binding="password">
+      <component id="3f7bd" class="javax.swing.JTextField" binding="userName">
         <constraints>
           <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -77,15 +61,15 @@
         </constraints>
         <properties/>
       </component>
-      <component id="be3ad" class="javax.swing.JLabel">
+      <component id="923cd" class="javax.swing.JLabel">
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Url"/>
+          <text value="PassWord"/>
         </properties>
       </component>
-      <component id="1e1ca" class="javax.swing.JTextField" binding="url">
+      <component id="7aeee" class="javax.swing.JPasswordField" binding="password">
         <constraints>
           <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -99,6 +83,30 @@
         </constraints>
         <properties>
           <text value="测试连接"/>
+        </properties>
+      </component>
+      <component id="be23f" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="数据源名称"/>
+        </properties>
+      </component>
+      <component id="4f759" class="javax.swing.JTextField" binding="datasourceName">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="68dc1" class="javax.swing.JLabel" binding="msg">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value=""/>
         </properties>
       </component>
     </children>
