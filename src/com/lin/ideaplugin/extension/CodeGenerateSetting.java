@@ -81,7 +81,9 @@ public class CodeGenerateSetting implements PersistentStateComponent<CodeGenerat
                 e.printStackTrace();
             }
         }
-        return writer.toString();
+			String templateVal = writer.toString();
+			System.out.println(System.getProperty("line.separator"));
+			return templateVal.replaceAll("\\\r", "");
     }
 
     @Nullable
