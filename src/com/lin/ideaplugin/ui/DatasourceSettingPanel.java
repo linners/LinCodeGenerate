@@ -22,16 +22,21 @@ public class DatasourceSettingPanel {
 
     private int count = 0;
     private List<DatasourceTemplate> datasourceTemplateList;
+    private Map<String, MyDatasourceInfo> myDatasourceInfoMap;
+
+    private DatasourceSettingPanel datasourceSettingPanel;
 
     public DatasourceSettingPanel(DatasourceSetting datasourceSetting) {
+        datasourceSettingPanel = this;
         datasourceTemplateList = new ArrayList<>();
-        Map<String, MyDatasourceInfo> myDatasourceInfoMap = datasourceSetting.getMyDatasourceInfoMap();
+        // Map<host_port, datasourceInfo>
+        myDatasourceInfoMap = datasourceSetting.getMyDatasourceInfoMap();
         // 初始化tab组件
         tabbedPanel = new JBTabbedPane();
         if(myDatasourceInfoMap!=null && myDatasourceInfoMap.size()>0){
             myDatasourceInfoMap.forEach((dsName, dsInfo) -> {
                 count++;
-                DatasourceTemplate template = new DatasourceTemplate(dsInfo);
+                DatasourceTemplate template = new DatasourceTemplate(dsInfo, this);
                 tabbedPanel.addTab("数据源_"+ count, template.getMainPanel());
                 datasourceTemplateList.add(template);
             });
@@ -50,13 +55,36 @@ public class DatasourceSettingPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 count++;
-                DatasourceTemplate template = new DatasourceTemplate();
+                DatasourceTemplate template = new DatasourceTemplate(datasourceSettingPanel);
                 tabbedPanel.addTab("数据源_"+ count, template.getMainPanel());
                 tabbedPanel.setSelectedIndex(tabbedPanel.getTabCount() - 1);
                 datasourceTemplateList.add(template);
             }
         });
     }
+
+    /**
+     * 删除数据源模板
+     * @param template      数据源模板
+     */
+    public void delDatasource(DatasourceTemplate template) {
+        datasourceTemplateList.remove(template);
+        myDatasourceInfoMap.remove(template.getHost() + "_" + template.getPort());
+        resetTabPane();
+    }
+
+    private void resetTabPane() {
+        tabbedPanel.removeAll();
+        if(myDatasourceInfoMap!=null && myDatasourceInfoMap.size()>0){
+            myDatasourceInfoMap.forEach((dsName, dsInfo) -> {
+                count++;
+                DatasourceTemplate template = new DatasourceTemplate(dsInfo, this);
+                tabbedPanel.addTab("数据源_"+ count, template.getMainPanel());
+                datasourceTemplateList.add(template);
+            });
+        }
+    }
+
 
     public JPanel getMainPanel() {
         return mainPanel;

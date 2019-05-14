@@ -163,7 +163,7 @@ public class CurdGenerateService {
     public String generateTemplateFile(VelocityContext velocityContext, String templateVal, String filePath) {
         String newTemplateVal = VelocityUtils.getInstance().compileVelocityString(templateVal, velocityContext);
         try {
-            Files.write(newTemplateVal.getBytes(Charset.forName("utf-8")), new File(filePath));
+            Files.write(newTemplateVal.getBytes("UTF-8"), new File(filePath));
         } catch (IOException e1) {
             e1.printStackTrace();
         }

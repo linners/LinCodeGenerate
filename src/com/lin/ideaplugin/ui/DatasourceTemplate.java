@@ -1,5 +1,6 @@
 package com.lin.ideaplugin.ui;
 
+import com.intellij.openapi.ui.Messages;
 import com.lin.ideaplugin.common.utils.JdbcUtil;
 import com.lin.ideaplugin.extension.MyDatasourceInfo;
 
@@ -18,18 +19,23 @@ public class DatasourceTemplate {
     private JPasswordField password;
     private JButton testConBtn;
     private JLabel msg;
+    private JButton delConBtn;      // 删除连接按钮
 
-    public DatasourceTemplate(){
-        initBtn();
+    private DatasourceTemplate datasourceTemplate;
+
+    public DatasourceTemplate(DatasourceSettingPanel datasourceSettingPanel){
+        datasourceTemplate = this;
+        initBtn(datasourceSettingPanel);
     }
 
-    public DatasourceTemplate(MyDatasourceInfo datasourceInfo) {
+    public DatasourceTemplate(MyDatasourceInfo datasourceInfo, DatasourceSettingPanel datasourceSettingPanel) {
+        datasourceTemplate = this;
         datasourceName.setText(datasourceInfo.getDatasourceName());
         host.setText(datasourceInfo.getHost());
         port.setText(datasourceInfo.getPort());
         userName.setText(datasourceInfo.getUserName());
         password.setText(datasourceInfo.getPassword());
-        initBtn();
+        initBtn(datasourceSettingPanel);
     }
 
     public JPanel getMainPanel() {
@@ -52,7 +58,7 @@ public class DatasourceTemplate {
         return password.getText();
     }
 
-    public void initBtn(){
+    public void initBtn(DatasourceSettingPanel datasourceSettingPanel){
         if(port.getText()==null || "".equals(port.getText())){
             port.setText("3306");
         }
@@ -69,6 +75,21 @@ public class DatasourceTemplate {
                 }catch (Exception e1){
                     e1.printStackTrace();
                     msg.setText("测试失败！");
+                }
+            }
+        });
+        delConBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    int result = Messages.showYesNoDialog("删除数据源?", "删除", null);
+                    if (result == Messages.OK) {
+                        datasourceSettingPanel.delDatasource(datasourceTemplate);
+                        msg.setText("删除成功！");
+                    }
+                }catch (Exception e1){
+                    e1.printStackTrace();
+                    msg.setText("删除失败！");
                 }
             }
         });

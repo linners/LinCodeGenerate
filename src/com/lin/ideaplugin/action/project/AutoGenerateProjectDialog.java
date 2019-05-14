@@ -13,8 +13,9 @@ public class AutoGenerateProjectDialog extends DialogWrapper {
 
     public AutoGenerateProjectDialog(@Nullable Project project) {
         super(project);
-        panel = new ProjectGeneratePanel(project);
+        panel = new ProjectGeneratePanel(project, this);
         setTitle("project auto generate");
+        setOKActionEnabled(false);
         init();
     }
 

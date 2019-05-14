@@ -20,8 +20,8 @@ public class AutoGenerateProjectAction extends AnAction implements DumbAware {
         Project project = actionEvent.getProject();
         AutoGenerateProjectDialog dialog = new AutoGenerateProjectDialog(project);
         dialog.show();
-        if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-            dialog.autoGenerateProject();
-        }
+//        if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+//            dialog.autoGenerateProject();
+//        }
     }
 }

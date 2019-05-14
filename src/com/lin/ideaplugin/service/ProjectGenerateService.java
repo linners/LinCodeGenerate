@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import com.lin.ideaplugin.common.dto.GenerateProjectExtend;
 import com.lin.ideaplugin.common.utils.JGitUtils;
 import com.lin.ideaplugin.common.utils.VelocityUtils;
+import com.lin.ideaplugin.ui.ProjectGeneratePanel;
 import org.apache.velocity.VelocityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,8 @@ public class ProjectGenerateService {
     private String oldGitTemplateBasePath;             // git模板下载目录
     private String newProjectCodeBasePath;             // 代码生成目录
 
+    private String lineSeparator = System.getProperty("line.separator");
+
     public ProjectGenerateService(String oldGitTemplateBasePath, String newProjectCodeBasePath) {
         this.oldGitTemplateBasePath = oldGitTemplateBasePath;
         this.newProjectCodeBasePath = newProjectCodeBasePath;
@@ -31,7 +34,9 @@ public class ProjectGenerateService {
      * @param param
      * @return
      */
-    public void generatorProject(GenerateProjectExtend generateParamExtend) {
+    public void generatorProject(GenerateProjectExtend generateParamExtend, ProjectGeneratePanel projectGeneratePanel) {
+        projectGeneratePanel.showResultMsg("正在下载gitHub仓库模板，准备生成目标工程" + lineSeparator);
+
         // 组装参数
         initProjectExtendInfo(generateParamExtend);
         String gitRepository = generateParamExtend.getGitRepository();
@@ -42,11 +47,12 @@ public class ProjectGenerateService {
         // 下载github上的工程模板
         String branchName = generateParamExtend.getBranchName();
         JGitUtils.cloneGitTemplate(gitRepository, gitProjectPath, branchName);
-        System.out.println(">>>>>>>>git工程下载完毕, 下载地址: " + gitProjectPath);
+
+        projectGeneratePanel.showResultMsg(">>>>>>>>git工程下载完毕, 下载地址: " + gitProjectPath + lineSeparator);
 
         // 重新生成新工程
         compileAndCloneGitProject(generateParamExtend, new File(gitProjectPath));
-        System.out.println(">>>>>>>>自动生成完毕, 生成地址: " + generatedProjectPath);
+        projectGeneratePanel.showResultMsg(">>>>>>>>自动生成完毕, 生成地址: " + generatedProjectPath + lineSeparator);
     }
 
     // 初始化参数
@@ -128,22 +134,32 @@ public class ProjectGenerateService {
                 } else if (tempFile.isFile()) {    // 文件
                     String oldFilePath = tempFile.getAbsolutePath();
                     String newFilePath = getNewFilePath(generateParamExtend, oldFilePath, false);
-                    String newContent = velocityInstance.compileVelocityFile(getGitProjectPath(generateParamExtend.getGitProjectPath(), oldFilePath), velocityContext);
-                    try {
-                        String[] arr = newFilePath.split("/");
-                        String[] newArr = Arrays.copyOf(arr, arr.length - 1);
-                        StringBuilder sb = new StringBuilder();
-                        for(String a : newArr){
-                            sb.append(a);
-                            sb.append("/");
+                    // 老文件地址，去除git根目录
+                    String oldFileRelativePath = getGitProjectPath(generateParamExtend.getGitProjectPath(), oldFilePath);
+                    String[] arr = newFilePath.split("/");
+                    String[] newArr = Arrays.copyOf(arr, arr.length - 1);
+                    StringBuilder sb = new StringBuilder();
+                    for(String a : newArr){
+                        sb.append(a);
+                        sb.append("/");
+                    }
+                    File tmpFile = new File(sb.toString());
+                    if (!tmpFile.exists()) {
+                        tmpFile.mkdirs();
+                    }
+                    if(oldFilePath!=null && !oldFilePath.endsWith(".vue")){
+                        String newContent = velocityInstance.compileVelocityFile(oldFileRelativePath, velocityContext);
+                        try {
+                            Files.write(newContent.getBytes("UTF-8"), new File(newFilePath));
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                        File tmpFile = new File(sb.toString());
-                        if (!tmpFile.exists()) {
-                            tmpFile.mkdirs();
+                    }else {
+                        try {
+                            Files.copy(new File(oldFilePath), new File(newFilePath));
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                        Files.write(newContent.getBytes(), new File(newFilePath));
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
             }

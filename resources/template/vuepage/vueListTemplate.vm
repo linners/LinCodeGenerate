@@ -1,0 +1,116 @@
+<template>
+  <div>
+    <el-breadcrumb separator="/" class="breadcrumb">
+      <el-breadcrumb-item><i class="el-icon-caret-right"></i> 商品指挥平台</el-breadcrumb-item>
+      <el-breadcrumb-item>商品汰换</el-breadcrumb-item>
+      <el-breadcrumb-item>商品汰换</el-breadcrumb-item>
+    </el-breadcrumb>
+
+    <div class="split"></div>
+
+    <!-- 查询条件 -->
+    <mc-condition @search="searchList" @reset="reset">
+##      <mc-select label="选择城市：" :options="allCitys" :value.sync="queryData.cityId" @change="cityChange"></mc-select>
+##      <mc-cascader label="采销分类：" :options="allCategorys" :value.sync="classId" @change="categoryChange"></mc-cascader>
+##      <mc-input label="SKU ID：" data-type="number" :value.sync="queryData.skuId"></mc-input>
+    </mc-condition>
+
+    <!-- table列表 -->
+    <mc-table :curpage.sync="queryData.curPage" :pagesize.sync=queryData.pageSize :totalcount="totalCount" @reload="reloadData">
+      <el-table
+        v-loading="loadingShow"
+        element-loading-text="拼命加载中"
+        :data="tableData"
+        tooltip-effect="dark"
+        :highlight-current-row="false"
+        :header-cell-style="{'background-color': '#f3f4f5',textAlign:'center'}"
+        style="width: 100%"
+        border
+        :row-style="selectedHighlight">
+        #foreach($column in $columns)
+          <el-table-column
+            prop="$column.fieldName"
+            #if($column.columnComment!='') label="$column.columnComment" #end
+            #if($column.columnComment=='') label="$column.fieldName" #end
+            align="center"
+            show-overflow-tooltip
+            min-width="120px">
+          </el-table-column>
+        #end
+        <el-table-column
+          fixed="right"
+          align="center"
+          label="操作"
+          width="140">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click.native.prevent="edit(scope.row)">修改</el-button>
+            <el-button type="text" size="small" @click.native.prevent="deleted(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </mc-table>
+  </div>
+</template>
+
+<script>
+  import McCondition from '@/components/condition/McCondition'
+  import McSelect from '@/components/condition/McSelect'
+  import McInput from '@/components/condition/McInput'
+  import McCascader from '@/components/condition/McCascader'
+  export default {
+    name: '${entityNameUp}',
+    components: { McCondition, McSelect, McInput, McCascader },
+    data() {
+      return {
+        queryData: {
+          curPage: 1,
+          pageSize: 20
+        },
+        // 加载中
+        loadingShow: false,
+        // 列表总数
+        totalCount: 0,
+        // 本页列表展示数据
+        tableData: [],
+      }
+    },
+    mounted() {
+      // 查询列表
+      this.searchList()
+    },
+    methods: {
+      // 重置条件
+      reset() {
+
+      },
+      // 查询按钮，查询列表
+      searchList(curpage){
+        this.reloadData(1)
+      },
+      // 分页切换，查询列表
+      reloadData(curpage) {
+        if(curpage) {
+          this.queryData.curPage = curpage
+        }
+        this.loadingShow = true
+        this.$http.post("/${entityName}/get${entityNameUp}ByPage", this.queryData).then(res=>{
+          this.loadingShow = false
+          let resData = res.data
+          if(resData.ret==1) {
+            this.totalCount = resData.data.total
+            this.tableData = resData.data.list
+          }else {
+            this.$message.error(resData.msg);
+          }
+        }).catch(res=>{
+          this.loadingShow = false
+          this.$message.error('查询异常！');
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>
