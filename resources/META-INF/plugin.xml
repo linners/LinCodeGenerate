@@ -10,9 +10,11 @@
     <version>1.0</version>
 
     <!-- 供应商主页和email-->
+    <!--suppress PluginXmlValidity -->
     <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
     <!-- 插件的描述 -->
+    <!--suppress PluginXmlValidity -->
     <description><![CDATA[
       Enter short description for your plugin here.<br>
       <em>most HTML tags may be used</em>
@@ -20,6 +22,7 @@
 
     <!-- 插件版本变更信息，支持HTML标签；
          将展示在 settings | Plugins 对话框和插件仓库的Web页面 -->
+    <!--suppress PluginXmlValidity -->
     <change-notes><![CDATA[
       Add change notes here.<br>
       <em>most HTML tags may be used</em>

@@ -53,11 +53,12 @@
 </template>
 
 <script>
-  import McCondition from '@/components/condition/McCondition'
-  import McSelect from '@/components/condition/McSelect'
-  import McInput from '@/components/condition/McInput'
-  import McCascader from '@/components/condition/McCascader'
-  export default {
+    import McCondition from '@/components/condition/McCondition'
+    import McSelect from '@/components/condition/McSelect'
+    import McInput from '@/components/condition/McInput'
+    import McCascader from '@/components/condition/McCascader'
+
+    export default {
     name: '${entityNameUp}',
     components: { McCondition, McSelect, McInput, McCascader },
     data() {

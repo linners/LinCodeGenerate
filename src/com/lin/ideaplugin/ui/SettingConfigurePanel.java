@@ -13,7 +13,6 @@ import com.lin.ideaplugin.extension.CodeGenerateSetting;
 import com.lin.ideaplugin.extension.SettingConfigure;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;

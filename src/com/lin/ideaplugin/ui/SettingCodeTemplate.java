@@ -6,7 +6,6 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.lin.ideaplugin.extension.CodeGenerateSetting;
-import com.lin.ideaplugin.extension.SettingConfigure;
 
 import javax.swing.*;
 import java.awt.*;

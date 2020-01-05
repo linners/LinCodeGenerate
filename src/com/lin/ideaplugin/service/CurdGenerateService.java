@@ -4,10 +4,7 @@ import com.google.common.io.Files;
 import com.lin.ideaplugin.common.contants.VelocityFileType;
 import com.lin.ideaplugin.common.dto.CurdTableInfo;
 import com.lin.ideaplugin.common.dto.GenerateCurdParam;
-import com.lin.ideaplugin.common.dto.GenerateProjectExtend;
 import com.lin.ideaplugin.common.dto.TableColumnInfo;
-import com.lin.ideaplugin.common.utils.JGitUtils;
-import com.lin.ideaplugin.common.utils.JdbcUtil;
 import com.lin.ideaplugin.common.utils.StringUtil;
 import com.lin.ideaplugin.common.utils.VelocityUtils;
 import com.lin.ideaplugin.extension.CodeGenerateSetting;
@@ -18,9 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +32,9 @@ public class CurdGenerateService {
         List<String> resultList = new ArrayList<>();
         List<CurdTableInfo> tableInfos = curdParam.getTableInfos();
         if(tableInfos!=null && tableInfos.size()>0) {
-            for(CurdTableInfo curdTableInfo : tableInfos)
+            for(CurdTableInfo curdTableInfo : tableInfos){
                 singleTableGenerate(resultList, curdParam, curdTableInfo.getTableName(), curdTableInfo.getEntityName(), curdTableInfo.getColumns());
+            }
         }
         return resultList;
     }

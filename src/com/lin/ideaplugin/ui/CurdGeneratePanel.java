@@ -23,8 +23,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CurdGeneratePanel {
@@ -440,7 +440,7 @@ public class CurdGeneratePanel {
                 tableColumnInfo.setColumnName(columnName);
                 tableColumnInfo.setDataType(dataType);
                 tableColumnInfo.setColumnComment(columnComment);
-                tableColumnInfo.setFieldName(StringUtil.camelName(columnName));
+                tableColumnInfo.setFieldName(StringUtil.lowerFirst(StringUtil.camelName(columnName)));
                 tableColumnInfo.setFieldType(StringUtil.sqlType2JavaType(dataType));
                 columnList.add(tableColumnInfo);
             }

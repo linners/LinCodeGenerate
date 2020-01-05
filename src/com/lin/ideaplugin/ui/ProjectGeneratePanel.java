@@ -14,8 +14,6 @@ import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -84,17 +82,15 @@ public class ProjectGeneratePanel {
             }
         });
 
-        autoCreateBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showResultMsg("项目生成中，请稍后。。。。" + lineSeparator);
-                // 自动生成代码
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        autoGenerateProject2();
-                    }
-                });
-            }
+        autoCreateBtn.addActionListener(e -> {
+            showResultMsg("项目生成中，请稍后。。。。" + lineSeparator);
+            // 自动生成代码
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    autoGenerateProject2();
+                }
+            });
         });
     }
 
@@ -116,7 +112,7 @@ public class ProjectGeneratePanel {
         params.put("projectName", projectName.getText());
         params.put("basePackage", basePackage.getText());
         // 得到生成的zip文件
-        String response = HttpClientUtil.post("https://www.wcler.cn/bulter/generate/project", new Gson().toJson(params));
+        String response = HttpClientUtil.post("https://www.wcler.com/bulter/generate/project", new Gson().toJson(params));
         // 下载zip文件
         String downloadFilePath = projectSavePath + projectName.getText() + ".zip";
         FileTool.downloadFile(response, downloadFilePath);

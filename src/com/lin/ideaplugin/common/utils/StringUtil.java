@@ -29,8 +29,10 @@ public class StringUtil {
     }
 
     public static void main(String[] args) {
-        String user = camelName("ter_user");
+        String user = camelName("HELLO_WORLD");
         System.out.println(user);
+        String s = lowerFirst(user);
+        System.out.println(s);
     }
 
     /**
@@ -49,6 +51,8 @@ public class StringUtil {
             return "Long";
         } else if (sqlType.equalsIgnoreCase("float")) {
             return "Float";
+        }else if (sqlType.equalsIgnoreCase("double")) {
+            return "Double";
         } else if (sqlType.equalsIgnoreCase("decimal") || sqlType.equalsIgnoreCase("numeric")
                 || sqlType.equalsIgnoreCase("real") || sqlType.equalsIgnoreCase("money")
                 || sqlType.equalsIgnoreCase("smallmoney")) {

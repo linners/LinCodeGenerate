@@ -3,11 +3,10 @@ package com.lin.ideaplugin.action.curd;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.lin.ideaplugin.common.contants.ActionType;
 import com.lin.ideaplugin.extension.CodeGenerateSetting;
 import com.lin.ideaplugin.extension.DatasourceSetting;
-import com.lin.ideaplugin.extension.SettingConfigure;
 import com.lin.ideaplugin.ui.CurdGeneratePanel;
-import com.lin.ideaplugin.common.contants.ActionType;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;

@@ -3,14 +3,18 @@ package ${entityPackage};
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ${entityNameUp} {
-    #foreach($column in $columns)#if($column.columnComment!='')// $column.columnComment #end
+    #foreach($column in $columns)#if($column.columnComment!='')/**
+    * $column.columnComment
+    */#end
 
-    private $column.fieldType $column.fieldName; 
+    private $column.fieldType $column.fieldName;
+
     #end
 
 }

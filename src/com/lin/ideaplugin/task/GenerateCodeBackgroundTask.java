@@ -1,7 +1,6 @@
 package com.lin.ideaplugin.task;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.progress.PerformInBackgroundOption;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
