@@ -23,7 +23,7 @@ public class AutoGenerateProjectDialog extends DialogWrapper {
      * 自动生成project框架代码
      */
     public void autoGenerateProject() {
-        panel.autoGenerateProject();
+        panel.autoGenerateProject2();
     }
 
     @Nullable

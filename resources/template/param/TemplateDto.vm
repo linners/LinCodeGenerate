@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ${entityNameUp}Dto {
-    #foreach($column in $columns)#if($column.columnComment!='')// $column.columnComment #end
+    #foreach($column in $columns)#if($column.columnComment!='')/**
+    * $column.columnComment
+    */#end
 
     private $column.fieldType $column.fieldName; 
     #end

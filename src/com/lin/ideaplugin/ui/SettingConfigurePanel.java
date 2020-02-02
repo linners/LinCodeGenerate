@@ -196,7 +196,13 @@ public class SettingConfigurePanel {
      * @return
      */
     public String getPackage(String packagePath) {
+        if(packagePath==null || packagePath.equals("")){
+            return "";
+        }
         int index = packagePath.indexOf("src/main/java");
+        if(packagePath.length()<index + 14){
+            return "";
+        }
         String substring = packagePath.substring(index+14);
         String str = substring.replaceAll("/", ".");
         return str;

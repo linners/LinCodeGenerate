@@ -159,10 +159,28 @@ public class CurdGenerateService {
     public String generateTemplateFile(VelocityContext velocityContext, String templateVal, String filePath) {
         String newTemplateVal = VelocityUtils.getInstance().compileVelocityString(templateVal, velocityContext);
         try {
+            int index = filePath.lastIndexOf("/");
+            if(index==-1){
+                index = filePath.lastIndexOf("\\");
+            }
+            String substring = filePath.substring(0, index);
+            File destFile = new File(substring);
+            if(!destFile.exists()){
+                destFile.mkdirs();
+            }
             Files.write(newTemplateVal.getBytes("UTF-8"), new File(filePath));
         } catch (IOException e1) {
             e1.printStackTrace();
         }
         return filePath;
+    }
+
+    public static void main(String[] args) {
+        String filePath = "C:\\linner-worker\\workspace\\myself\\linner-project\\linner-project-service\\src\\main\\java\\com\\lin\\base\\service\\impl\\aa.java";
+        String substring = filePath.substring(0, filePath.lastIndexOf(File.separator));
+        File destFile = new File(substring);
+        if(!destFile.exists()){
+            destFile.mkdirs();
+        }
     }
 }

@@ -1,8 +1,13 @@
 package com.lin.ideaplugin.ui;
 
 import com.google.gson.Gson;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.fileChooser.FileChooserDialog;
+import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.lin.ideaplugin.action.project.AutoGenerateProjectDialog;
 import com.lin.ideaplugin.common.dto.GenerateProjectExtend;
@@ -14,6 +19,8 @@ import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -31,6 +38,8 @@ public class ProjectGeneratePanel {
     private JTextField artifactId;
     private JTextField version;
     private JTextField basePackage;
+    private JTextField savePath;
+    private JButton choseSavePath;
     private JButton autoCreateBtn;
     private JTextArea resultMsg;
 
@@ -82,6 +91,15 @@ public class ProjectGeneratePanel {
             }
         });
 
+        // 选择保存路径
+        choseSavePath.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String savePathStr = chooseDirectory(project, savePath.getText());
+                savePath.setText(savePathStr);
+            }
+        });
+
         autoCreateBtn.addActionListener(e -> {
             showResultMsg("项目生成中，请稍后。。。。" + lineSeparator);
             // 自动生成代码
@@ -94,13 +112,39 @@ public class ProjectGeneratePanel {
         });
     }
 
+    /**
+     * 选择文件路径
+     * @param project
+     * @return
+     */
+    private String chooseDirectory(Project project, String path) {
+        FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                .withTitle("Select Directory Location")
+                .withDescription("Choose directory for lin generate code configurations")
+                .withHideIgnored(true);
+        FileChooserDialog chooser = FileChooserFactory.getInstance().createFileChooser(descriptor, project, null);
+        final VirtualFile[] files;
+        File existingLocation = new File(path);
+        if (existingLocation.exists()) {
+            VirtualFile toSelect = LocalFileSystem.getInstance().refreshAndFindFileByPath(existingLocation.getPath());
+            files = chooser.choose(project, toSelect);
+        } else {
+            files = chooser.choose(project);
+        }
+        if (files==null) {
+            return "";
+        }
+        VirtualFile file = files[0];
+        return file.getPath();
+    }
+
     public void showResultMsg(String msg) {
         resultMsg.append(msg);
         resultMsg.paintImmediately(resultMsg.getBounds());
     }
 
-    private void autoGenerateProject2() {
-        String projectSavePath = "d:/download/";
+    public void autoGenerateProject2() {
+        String projectSavePath = savePath.getText()==null?"d:/download":savePath.getText();
         // 参数组装
         Map<String, String> params = new HashMap<>();
         params.put("gitRepository", gitRepositoryStr);
@@ -142,6 +186,7 @@ public class ProjectGeneratePanel {
         param.setVersion(version.getText());
         param.setProjectName(projectName.getText());
         param.setBasePackage(basePackage.getText());
+        param.setGeneratedProjectPath(savePath.getText());
         projectGenerateService.generatorProject(param, this);
         Messages.showInfoMessage("工程生成完毕，生成目录：！"+projectSavePath, "生成提示");
     }
