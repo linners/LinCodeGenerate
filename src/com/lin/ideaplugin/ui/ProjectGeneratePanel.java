@@ -83,9 +83,12 @@ public class ProjectGeneratePanel {
                     if(item.toString().equals("多模块-web-模板")){
                         gitRepositoryStr = "https://github.com/linners/springboot-multi-template-web.git";
                         oldBasePackage = "com.lin.bulter";
-                    }else {
+                    }else if(item.toString().equals("多模块-web-dubbo-模板")){
                         gitRepositoryStr = "https://github.com/linners/springboot-multi-template-web-dubbo.git";
                         oldBasePackage = "com.sprucetec.product.base";
+                    }else if(item.toString().equals("多模块-web-京东-模板")){
+                        gitRepositoryStr = "https://github.com/linners/springboot-multi-template-web-jd.git";
+                        oldBasePackage = "com.lin.base";
                     }
                 }
             }
