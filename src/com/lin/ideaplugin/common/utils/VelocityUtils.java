@@ -3,6 +3,7 @@ package com.lin.ideaplugin.common.utils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.NullLogChute;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 
 import java.io.StringWriter;
@@ -22,13 +23,20 @@ public class VelocityUtils {
      */
     private VelocityUtils(String fileBasePath) {
         Properties properties = new Properties();
-        //设置velocity资源加载方式为file
+        // 设置velocity资源加载方式为file
         properties.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH, fileBasePath);
+        // 设置velocity日志处理类
+        properties.setProperty("runtime.log.logsystem.class", NullLogChute.class.getName());
+        properties.put("runtime.log.logsystem.log4j.category", "velocity");
+        properties.put("runtime.log.logsystem.log4j.logger", "velocity");
+
         //设置velocity资源加载方式为file时的处理类
         properties.put("input.encoding", "UTF-8");
         properties.put("output.encoding", "UTF-8");
         //实例化一个VelocityEngine对象
         velocityEngine = new VelocityEngine(properties);
+        velocityEngine.init();
+
     }
     private VelocityUtils() {
 //        Properties properties = new Properties();
@@ -42,6 +50,10 @@ public class VelocityUtils {
         velocityEngine = new VelocityEngine();
         velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+
+        velocityEngine.setProperty("runtime.log.logsystem.class", NullLogChute.class.getName());
+        velocityEngine.setProperty("runtime.log.logsystem.log4j.category", "velocity");
+        velocityEngine.setProperty("runtime.log.logsystem.log4j.logger", "velocity");
 
         velocityEngine.init();
     }
