@@ -10,7 +10,7 @@
         ${tableName}
       <where>
         #foreach($column in $columns)<if test="param.$column.fieldName != null">
-            $column.columnName = #{param.$column.fieldName}
+            and $column.columnName = #{param.$column.fieldName}
         </if>
         #end
 
